@@ -86,7 +86,7 @@ if ($metodo === 'GET' && $accion === 'citas_del_dia') {
 
     $pdo  = conectar();
     $stmt = $pdo->prepare(
-        "SELECT TIME_FORMAT(hora,  '%h:%i %p') AS hora,, estado
+        "SELECT TIME_FORMAT(hora, '%H:%i') AS hora, estado
          FROM citas
          WHERE fecha = ? AND estado != 'cancelada'
          ORDER BY hora"
@@ -147,11 +147,11 @@ if ($metodo === 'POST') {
         responder([
             'mensaje' => 'Cita agendada correctamente.',
             'cita'    => [
-                'id'       => $pdo->lastInsertId(),
-                'nombre'   => $nombre,
-                'fecha'    => $fecha,
-                'hora'     => $hora,
-                'estado'   => 'pendiente',
+                'id'     => $pdo->lastInsertId(),
+                'nombre' => $nombre,
+                'fecha'  => $fecha,
+                'hora'   => $hora,
+                'estado' => 'pendiente',
             ],
         ], 201);
 
@@ -165,17 +165,4 @@ if ($metodo === 'POST') {
 }
 
 // ── Método no permitido ──────────────────────
-responder(['error' => 'Acción no reconocida.'], 405);   
-?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>adf</h1>
-</body>
-</html>
+responder(['error' => 'Acción no reconocida.'], 405);

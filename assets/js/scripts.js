@@ -4,7 +4,7 @@
 // ============================================
 
 // Ruta a la API
-const API_URL = '../app/citas.php';
+const API_URL = './app/citas.php';
 
 // ── Referencias al DOM ───────────────────────
 const inputFecha       = document.getElementById('cita-fecha');
@@ -68,22 +68,25 @@ function renderizarHoras(disponibles, ocupadas) {
   listaHoras.innerHTML = '';
 
   // Horas disponibles — seleccionables
-  disponibles.forEach(hora => {
+  // La API devuelve horas en 24h (ej: "09:00")
+  // dataset.hora guarda 24h para enviar a la API
+  // textContent muestra 12h para el usuario
+  disponibles.forEach(hora24 => {
     const btn = document.createElement('button');
     btn.type         = 'button';
-    btn.textContent  = hora;                  // muestra "09:00 AM"
-    btn.dataset.hora = convertir24h(hora);    // guarda "09:00" para la API
+    btn.textContent  = convertir12h(hora24);  // muestra "09:00 AM"
+    btn.dataset.hora = hora24;                // guarda "09:00" para la API
     btn.classList.add('btn-hora', 'disponible');
 
-    btn.addEventListener('click', () => seleccionarHora(btn, hora));
+    btn.addEventListener('click', () => seleccionarHora(btn));
     listaHoras.appendChild(btn);
   });
 
   // Horas ocupadas — deshabilitadas visualmente
-  ocupadas.forEach(hora => {
+  ocupadas.forEach(hora24 => {
     const btn = document.createElement('button');
     btn.type        = 'button';
-    btn.textContent = hora;
+    btn.textContent = convertir12h(hora24);   // muestra "09:00 AM" también
     btn.disabled    = true;
     btn.classList.add('btn-hora', 'ocupada');
     listaHoras.appendChild(btn);
@@ -91,15 +94,15 @@ function renderizarHoras(disponibles, ocupadas) {
 }
 
 // ── Seleccionar una hora ─────────────────────
-function seleccionarHora(btnSeleccionado, hora) {
+function seleccionarHora(btnSeleccionado) {
   // Quitar selección anterior
   document.querySelectorAll('.btn-hora.seleccionada').forEach(btn => {
     btn.classList.remove('seleccionada');
   });
 
   btnSeleccionado.classList.add('seleccionada');
-  inputHora.value       = btnSeleccionado.dataset.hora;  // envía en 24h a la API
-  btnAgendar.disabled   = false;
+  inputHora.value     = btnSeleccionado.dataset.hora;  // envía en 24h a la API
+  btnAgendar.disabled = false;
   limpiarMensaje();
 }
 
@@ -110,7 +113,7 @@ btnAgendar?.addEventListener('click', async () => {
   const nombre      = inputNombre.value.trim();
   const contacto    = inputContacto.value.trim();
   const fecha       = inputFecha.value;
-  const hora        = inputHora.value;
+  const hora        = inputHora.value;           // siempre en 24h
   const descripcion = inputDescripcion.value.trim();
 
   // Validación del lado del cliente
@@ -129,7 +132,7 @@ btnAgendar?.addEventListener('click', async () => {
     return;
   }
 
-  btnAgendar.disabled   = true;
+  btnAgendar.disabled    = true;
   btnAgendar.textContent = 'Agendando...';
 
   try {
@@ -143,7 +146,7 @@ btnAgendar?.addEventListener('click', async () => {
 
     if (res.ok) {
       mostrarMensaje(
-        `¡Cita agendada! Te esperamos el ${formatearFecha(fecha)} a las ${hora}.`,
+        `¡Cita agendada! Te esperamos el ${formatearFecha(fecha)} a las ${convertir12h(hora)}.`,
         'exito'
       );
       limpiarFormulario();
@@ -151,7 +154,7 @@ btnAgendar?.addEventListener('click', async () => {
       consultarDisponibilidad(fecha);
     } else {
       mostrarMensaje(data.error || 'No se pudo agendar la cita.', 'error');
-      btnAgendar.disabled   = false;
+      btnAgendar.disabled = false;
     }
 
   } catch (err) {
@@ -166,8 +169,8 @@ btnAgendar?.addEventListener('click', async () => {
 // ── Helpers ──────────────────────────────────
 
 function mostrarMensaje(texto, tipo) {
-  estadoDiv.textContent  = texto;
-  estadoDiv.className    = tipo === 'exito' ? 'mensaje-exito' : 'mensaje-error';
+  estadoDiv.textContent = texto;
+  estadoDiv.className   = tipo === 'exito' ? 'mensaje-exito' : 'mensaje-error';
 }
 
 function limpiarMensaje() {
@@ -192,10 +195,12 @@ function formatearFecha(fechaISO) {
   return `${dia}/${mes}/${anio}`;
 }
 
-function convertir24h(hora12) {
-  const [tiempo, periodo] = hora12.split(' ');
-  let [hh, mm] = tiempo.split(':').map(Number);
-  if (periodo === 'PM' && hh !== 12) hh += 12;
-  if (periodo === 'AM' && hh === 12) hh = 0;
-  return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+// Convierte "13:30" → "01:30 PM"  |  "09:00" → "09:00 AM"
+function convertir12h(hora24) {
+  const [hhStr, mm] = hora24.split(':');
+  let hh = parseInt(hhStr, 10);
+  const periodo = hh >= 12 ? 'PM' : 'AM';
+  if (hh === 0)  hh = 12;
+  if (hh > 12)   hh -= 12;
+  return `${String(hh).padStart(2, '0')}:${mm} ${periodo}`;
 }
