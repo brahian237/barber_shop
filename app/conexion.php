@@ -1,13 +1,11 @@
 <?php
-// ============================================
 // CONEXIÓN A LA BASE DE DATOS
-// Edita estos valores con los de tu servidor
-// ============================================
+
 
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'barbershop');
-define('DB_USER', 'root');       // Cambia por tu usuario
-define('DB_PASS', '');           // Cambia por tu contraseña
+define('DB_USER', 'root');
+define('DB_PASS', '');
 define('DB_CHARSET', 'utf8mb4');
 
 function conectar(): PDO {

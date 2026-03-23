@@ -1,12 +1,9 @@
-// ============================================
-// BARBER SHOP — scripts.js
 // Conecta el formulario de citas con la API
-// ============================================
-
 // Ruta a la API
+
 const API_URL = './app/citas.php';
 
-// ── Referencias al DOM ───────────────────────
+// Referencias al DOM
 const inputFecha       = document.getElementById('cita-fecha');
 const listaHoras       = document.getElementById('lista-horas');
 const mensajeHora      = document.getElementById('hora-mensaje');
@@ -18,13 +15,13 @@ const inputDescripcion = document.getElementById('cita-descripcion');
 const btnAgendar       = document.getElementById('btn-agendar');
 const estadoDiv        = document.getElementById('cita-estado');
 
-// ── Inicialización ───────────────────────────
+// Inicialización
 
 // Bloquear fechas pasadas: mínimo hoy
 const hoy = new Date().toISOString().split('T')[0];
 if (inputFecha) inputFecha.min = hoy;
 
-// ── Evento: cambio de fecha ──────────────────
+// Evento: cambio de fecha
 inputFecha?.addEventListener('change', () => {
   const fecha = inputFecha.value;
   inputHora.value = '';
@@ -36,7 +33,7 @@ inputFecha?.addEventListener('change', () => {
   consultarDisponibilidad(fecha);
 });
 
-// ── Consultar disponibilidad a la API ────────
+// Consultar disponibilidad a la API
 async function consultarDisponibilidad(fecha) {
   mensajeHora.textContent = 'Cargando horarios disponibles...';
   listaHoras.innerHTML = '';
@@ -64,7 +61,7 @@ async function consultarDisponibilidad(fecha) {
   }
 }
 
-// ── Renderizar botones de hora ───────────────
+// Renderizar botones de hora
 function renderizarHoras(disponibles, ocupadas) {
   listaHoras.innerHTML = '';
 
@@ -91,7 +88,7 @@ function renderizarHoras(disponibles, ocupadas) {
   });
 }
 
-// ── Seleccionar una hora ─────────────────────
+// Seleccionar una hora
 function seleccionarHora(btnSeleccionado) {
   document.querySelectorAll('.btn-hora.seleccionada').forEach(btn => {
     btn.classList.remove('seleccionada');
@@ -103,7 +100,7 @@ function seleccionarHora(btnSeleccionado) {
   limpiarMensaje();
 }
 
-// ── Evento: enviar formulario ────────────────
+// Evento: enviar formulario
 btnAgendar?.addEventListener('click', async () => {
   limpiarMensaje();
 
@@ -175,7 +172,7 @@ btnAgendar?.addEventListener('click', async () => {
   btnAgendar.textContent = 'Agendar Cita';
 });
 
-// ── Helpers ──────────────────────────────────
+// Helpers
 
 function mostrarMensaje(texto, tipo) {
   estadoDiv.textContent = texto;

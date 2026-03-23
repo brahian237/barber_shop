@@ -1,11 +1,11 @@
 <?php
-// ============================================
+
 // PANEL DE ADMINISTRACIÓN DE CITAS
-// ============================================
+
 
 require_once 'conexion.php';
 
-// ── PHPMailer (instalación manual) ───────────
+// PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
@@ -14,20 +14,25 @@ require_once __DIR__ . '/mailer/Exception.php';
 require_once __DIR__ . '/mailer/PHPMailer.php';
 require_once __DIR__ . '/mailer/SMTP.php';
 
-// ── Configuración del correo ─────────────────
-// Cambia estos valores cuando el cliente tenga su propio correo
+// Configuración del correo
+
 define('MAIL_HOST',     'smtp.gmail.com');
 define('MAIL_PORT',     587);
-define('MAIL_USER',     'brahianstivenmolina19@gmail.com');
-define('MAIL_PASS',     'moeg qsel tkex mjmn');
-define('MAIL_FROM',     'brahianstivenmolina19@gmail.com');
-define('MAIL_FROM_NAME','Barber Shop');
+define('MAIL_USER',     'brahianstivenmolina19@gmail.com'); // correo del administrador (remitente)
+define('MAIL_PASS',     'moeg qsel tkex mjmn'); // contraseña de aplicación del administrador
+define('MAIL_FROM',     'brahianstivenmolina19@gmail.com'); // mismo correo del administrador
+define('MAIL_FROM_NAME','Barber Shop'); // nombre que verá el cliente como remitente
 
-// ── Autenticación básica ─────────────────────
+// Autenticación básica
 define('ADMIN_USUARIO',  'admin');
 define('ADMIN_PASSWORD', 'barbershop2025');
 
 session_start();
+
+// Evitar que el navegador cachee el panel admin
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
+header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
 $error_login = '';
 
@@ -50,7 +55,7 @@ if (isset($_POST['cerrar_sesion'])) {
 
 $logueado = !empty($_SESSION['admin']);
 
-// ── Acciones sobre citas ─────────────────────
+// Acciones sobre citas
 $mensaje       = '';
 $mensaje_tipo  = 'success';
 
@@ -98,18 +103,18 @@ if ($logueado && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['mensaje_tipo'] = 'success';
         }
 
-        // ── PRG: redirigir para evitar reenvío del formulario al recargar ──
+        // PRG: redirigir para evitar reenvío del formulario al recargar
         header("Location: admin.php?fecha=" . urlencode($fecha_filtro));
         exit;
     }
 }
 
-// ── Leer mensaje de sesión (si viene de un redirect) ────
+// Leer mensaje de sesión (si viene de un redirect)
 $mensaje      = $_SESSION['mensaje']      ?? '';
 $mensaje_tipo = $_SESSION['mensaje_tipo'] ?? 'success';
 unset($_SESSION['mensaje'], $_SESSION['mensaje_tipo']);
 
-// ── Función: enviar correo de confirmación ───
+// Función: enviar correo de confirmación
 function enviarCorreoConfirmacion(
     string $destinatario,
     string $nombre,
@@ -143,7 +148,7 @@ function enviarCorreoConfirmacion(
 
         // Contenido del correo
         $mail->isHTML(true);
-        $mail->Subject = '✅ Tu cita en Barber Shop ha sido confirmada';
+        $mail->Subject = 'Tu cita en Barber Shop ha sido confirmada';
         $mail->Body    = "
         <div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto;'>
             <h2 style='color: #212529;'>¡Cita Confirmada!</h2>
@@ -160,7 +165,7 @@ function enviarCorreoConfirmacion(
                 </tr>
                 <tr>
                     <td style='padding: 10px; background:#f8f9fa; border: 1px solid #dee2e6;'><strong>Dirección</strong></td>
-                    <td style='padding: 10px; border: 1px solid #dee2e6;'>Calle 10 # 43-25, El Poblado, Medellín</td>
+                    <td style='padding: 10px; border: 1px solid #dee2e6;'>Calle 00 # 00-00, La Ceja, Antioquia</td>
                 </tr>
             </table>
             <p>Si necesitas cancelar o cambiar tu cita, contáctanos por WhatsApp:
@@ -168,11 +173,11 @@ function enviarCorreoConfirmacion(
             </p>
             <hr style='border:none; border-top:1px solid #dee2e6; margin: 24px 0;'>
             <p style='color:#6c757d; font-size: 13px;'>
-                Barber Shop · El Poblado, Medellín · Lunes a Sábado, 9:00 am – 7:00 pm
+                Barber Shop · La Ceja, Antioquia · Lunes a Sábado, 9:00 am – 7:00 pm
             </p>
         </div>";
 
-        $mail->AltBody = "¡Cita confirmada, {$nombre}! Te esperamos el {$fecha} a las {$hora12} en Barber Shop, Calle 10 # 43-25, El Poblado, Medellín.";
+        $mail->AltBody = "¡Cita confirmada, {$nombre}! Te esperamos el {$fecha} a las {$hora12} en Barber Shop, Calle 10 # 43-25, La Ceja, Antioquia.";
 
         $mail->send();
         return true;
@@ -183,7 +188,7 @@ function enviarCorreoConfirmacion(
     }
 }
 
-// ── Función: enviar correo de cancelación ────
+// Función: enviar correo de cancelación
 function enviarCorreoCancelacion(
     string $destinatario,
     string $nombre,
@@ -213,7 +218,7 @@ function enviarCorreoCancelacion(
         $mail->addAddress($destinatario, $nombre);
 
         $mail->isHTML(true);
-        $mail->Subject = '❌ Tu cita en Barber Shop ha sido cancelada';
+        $mail->Subject = 'Tu cita en Barber Shop ha sido cancelada';
         $mail->Body    = "
         <div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto;'>
             <h2 style='color: #dc3545;'>Cita Cancelada</h2>
@@ -234,7 +239,7 @@ function enviarCorreoCancelacion(
             </p>
             <hr style='border:none; border-top:1px solid #dee2e6; margin: 24px 0;'>
             <p style='color:#6c757d; font-size: 13px;'>
-                Barber Shop · El Poblado, Medellín · Lunes a Sábado, 9:00 am – 7:00 pm
+                Barber Shop · La Ceja, Antioquia · Lunes a Sábado, 9:00 am – 7:00 pm
             </p>
         </div>";
 
@@ -249,7 +254,7 @@ function enviarCorreoCancelacion(
     }
 }
 
-// ── Consultar citas ──────────────────────────
+// Consultar citas
 $citas        = [];
 $filtro_fecha = $_GET['fecha'] ?? date('Y-m-d');
 
@@ -274,9 +279,8 @@ if ($logueado) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin — Barber Shop</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/css/admin.css" />
+  <link rel="icon" href="../assets/media/img/predef.ico" type="image/x-icon" />
 </head>
 <body>
 
@@ -310,12 +314,51 @@ if ($logueado) {
 
   <!-- Header -->
   <header class="admin-header">
-    <div class="brand">Barber<span>Shop</span> <span style="font-size:0.8rem;color:var(--text-faint);font-family:var(--font-body);letter-spacing:0.06em;font-style:normal;">/ Admin</span></div>
-    <form method="POST">
-      <button name="cerrar_sesion" class="btn-logout">Cerrar sesión</button>
-    </form>
+    <div class="brand">Barber<span class="gold">Shop</span><span class="sep">/ Admin</span></div>
+    <div class="header-actions">
+
+      <!-- Campana -->
+      <button class="notif-btn" id="notif-btn" title="Citas pendientes" onclick="toggleNotifPanel()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span class="notif-badge" id="notif-badge">0</span>
+      </button>
+
+      <!-- Cerrar sesión -->
+      <form method="POST">
+        <button name="cerrar_sesion" class="btn-logout">Cerrar sesión</button>
+      </form>
+    </div>
   </header>
 
+  <!-- Panel de notificaciones -->
+  <div class="notif-panel" id="notif-panel">
+    <div class="notif-panel-header">
+      <span class="notif-title">Citas pendientes</span>
+      <button class="notif-close" onclick="toggleNotifPanel()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="notif-panel-body" id="notif-panel-body">
+      <div class="notif-empty">Cargando...</div>
+    </div>
+    <div class="notif-panel-footer">
+      <button class="btn-push" id="btn-push" onclick="solicitarPermisoNotif()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span id="push-label">Activar notificaciones push</span>
+      </button>
+    </div>
+  </div>
+  <div class="notif-overlay" id="notif-overlay" onclick="toggleNotifPanel()"></div>
+
+  <!-- Cuerpo -->
   <div class="admin-body">
 
     <h1 class="section-title">Citas del día</h1>
@@ -338,7 +381,7 @@ if ($logueado) {
 
     <?php else: ?>
 
-      <!-- ── CARDS (móvil) ── -->
+      <!-- Cards (móvil) -->
       <div class="citas-list">
         <?php foreach ($citas as $cita): ?>
           <?php
@@ -347,7 +390,6 @@ if ($logueado) {
               'cancelada'  => 'estado-cancelada',
               default      => 'estado-pendiente',
             };
-            // Convertir hora a 12h
             [$hh, $mm] = explode(':', $cita['hora']);
             $hh = (int)$hh;
             $per = $hh >= 12 ? 'PM' : 'AM';
@@ -389,7 +431,7 @@ if ($logueado) {
         <?php endforeach; ?>
       </div>
 
-      <!-- ── TABLA (desktop) ── -->
+      <!-- Tabla (desktop) -->
       <div class="citas-table-wrap">
         <table>
           <thead>
@@ -456,10 +498,9 @@ if ($logueado) {
 
   </div>
 
-  <script>setTimeout(() => location.reload(), 30000);</script>
+  <script src="../assets/js/funAdmin.js"></script>
 
 <?php endif; ?>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

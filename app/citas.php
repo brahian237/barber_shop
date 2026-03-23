@@ -1,11 +1,10 @@
 <?php
-// ============================================
 // API DE CITAS
 // Endpoints:
 //   GET  citas.php?accion=disponibilidad&fecha=YYYY-MM-DD
 //   GET  citas.php?accion=citas_del_dia&fecha=YYYY-MM-DD
 //   POST citas.php  (body JSON)
-// ============================================
+
 
 require_once 'conexion.php';
 
@@ -15,8 +14,7 @@ define('HORA_INICIO', '09:00');
 define('HORA_FIN',    '19:00');
 define('INTERVALO',   30);
 
-// ── Helpers ─────────────────────────────────
-
+// Helpers
 function responder(array $datos, int $codigo = 200): void {
     http_response_code($codigo);
     echo json_encode($datos, JSON_UNESCAPED_UNICODE);
@@ -36,12 +34,21 @@ function horarios_del_dia(): array {
     return $horarios;
 }
 
-// ── Router ──────────────────────────────────
+// Sesión (para endpoints protegidos)
+session_start();
+
+// Router
 
 $metodo = $_SERVER['REQUEST_METHOD'];
 $accion = $_GET['accion'] ?? '';
 
-// ── GET: disponibilidad ──────────────────────
+// Endpoints que requieren sesión de admin
+$accionesProtegidas = ['pendientes', 'pendientes_detalle'];
+if (in_array($accion, $accionesProtegidas) && empty($_SESSION['admin'])) {
+    responder(['error' => 'No autorizado.'], 401);
+}
+
+// GET: disponibilidad
 if ($metodo === 'GET' && $accion === 'disponibilidad') {
 
     $fecha = $_GET['fecha'] ?? '';
@@ -69,7 +76,7 @@ if ($metodo === 'GET' && $accion === 'disponibilidad') {
     ]);
 }
 
-// ── GET: citas del día ───────────────────────
+// GET: citas del día
 if ($metodo === 'GET' && $accion === 'citas_del_dia') {
 
     $fecha = $_GET['fecha'] ?? '';
@@ -93,7 +100,7 @@ if ($metodo === 'GET' && $accion === 'citas_del_dia') {
     ]);
 }
 
-// ── POST: crear cita ─────────────────────────
+// ¿POST: crear cita
 if ($metodo === 'POST') {
 
     $body = json_decode(file_get_contents('php://input'), true);
@@ -163,5 +170,41 @@ if ($metodo === 'POST') {
     }
 }
 
-// ── Método no permitido ──────────────────────
+// GET: conteo de pendientes (para notificaciones)
+if ($metodo === 'GET' && $accion === 'pendientes') {
+    $pdo  = conectar();
+    $stmt = $pdo->prepare(
+        "SELECT COUNT(*) AS total,
+                SUM(CASE WHEN fecha = CURDATE() THEN 1 ELSE 0 END) AS hoy
+         FROM citas
+         WHERE estado = 'pendiente' AND fecha >= CURDATE()"
+    );
+    $stmt->execute();
+    $row = $stmt->fetch();
+
+    responder([
+        'total' => (int) $row['total'],
+        'hoy'   => (int) $row['hoy'],
+    ]);
+}
+
+// GET: detalle de pendientes (para el panel)
+if ($metodo === 'GET' && $accion === 'pendientes_detalle') {
+    $pdo  = conectar();
+    $stmt = $pdo->prepare(
+        "SELECT nombre,
+                DATE_FORMAT(fecha, '%d/%m/%Y') AS fecha,
+                fecha                          AS fecha_iso,
+                TIME_FORMAT(hora, '%H:%i')     AS hora
+         FROM citas
+         WHERE estado = 'pendiente' AND fecha >= CURDATE()
+         ORDER BY fecha ASC, hora ASC
+         LIMIT 50"
+    );
+    $stmt->execute();
+
+    responder(['citas' => $stmt->fetchAll()]);
+}
+
+// Método no permitido
 responder(['error' => 'Acción no reconocida.'], 405);

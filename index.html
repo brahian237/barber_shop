@@ -6,9 +6,7 @@
     <title>Barber Shop</title>
     <link rel="stylesheet" href="assets/css/style.css" />
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"/>
     <link rel="icon" type="image/x-icon" href="assets/media/img/predef.ico" />
   </head>
   <body>
@@ -16,9 +14,7 @@
     <div class="cursor" id="cursor"></div>
     <div class="cursor-ring" id="cursor-ring"></div>
 
-    <!-- ========================
-         NAVBAR
-    ========================= -->
+    <!--NAVBAR-->
     <nav class="navbar navbar-dark navbar-expand-lg">
       <div class="container-fluid">
         <a class="navbar-brand" href="#"
@@ -56,9 +52,7 @@
       </div>
     </nav>
 
-    <!-- ========================
-         HEADER / HERO
-    ========================= -->
+    <!--HEADER-->
     <header>
       <h1>
         <span class="line-barber">Barber</span
@@ -72,9 +66,7 @@
       </div>
     </header>
 
-    <!-- ========================
-         SECCIÓN: SERVICIOS
-    ========================= -->
+    <!--SECCIÓN: SERVICIOS-->
     <section id="servicios">
       <span class="gold-line reveal"></span>
       <h2 class="reveal reveal-delay-1">Cortes &amp; Servicios</h2>
@@ -174,9 +166,7 @@
       </div>
     </section>
 
-    <!-- ========================
-         SECCIÓN: CONTACTO
-    ========================= -->
+    <!--SECCIÓN: CONTACTO-->
     <section id="contacto">
       <span class="gold-line reveal"></span>
       <h2 class="reveal reveal-delay-1">Contacto</h2>
@@ -224,9 +214,7 @@
       </div>
     </section>
 
-    <!-- ========================
-         SECCIÓN: CITAS
-    ========================= -->
+    <!--SECCIÓN: CITAS-->
     <section id="citas">
       <span class="gold-line reveal"></span>
       <h2 class="reveal reveal-delay-1">Agenda tu Cita</h2>
@@ -306,9 +294,7 @@
       </div>
     </section>
 
-    <!-- ========================
-         FOOTER
-    ========================= -->
+    <!--FOOTER-->
     <footer>
       <p>
         © 2026 Innova-Fide · La Ceja, Antioquia · Todos los derechos reservados
@@ -317,61 +303,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/scripts.js"></script>
-
-    <script>
-      // ── Cursor personalizado (solo desktop) ──
-      const cursor = document.getElementById("cursor");
-      const cursorRing = document.getElementById("cursor-ring");
-
-      if (cursor && window.matchMedia("(pointer: fine)").matches) {
-        let mouseX = 0,
-          mouseY = 0,
-          ringX = 0,
-          ringY = 0;
-
-        document.addEventListener("mousemove", (e) => {
-          mouseX = e.clientX;
-          mouseY = e.clientY;
-          cursor.style.left = mouseX + "px";
-          cursor.style.top = mouseY + "px";
-        });
-
-        (function animateRing() {
-          ringX += (mouseX - ringX) * 0.12;
-          ringY += (mouseY - ringY) * 0.12;
-          cursorRing.style.left = ringX + "px";
-          cursorRing.style.top = ringY + "px";
-          requestAnimationFrame(animateRing);
-        })();
-      }
-
-      // ── Scroll reveal ────────────────────────
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("visible");
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
-      );
-
-      document
-        .querySelectorAll(".reveal")
-        .forEach((el) => observer.observe(el));
-
-      // ── Navbar: sombra al hacer scroll ───────
-      const navbar = document.querySelector(".navbar");
-      window.addEventListener(
-        "scroll",
-        () => {
-          navbar.style.boxShadow =
-            window.scrollY > 20 ? "0 4px 24px rgba(0,0,0,0.5)" : "none";
-        },
-        { passive: true },
-      );
-    </script>
+    <script src="assets/js/cursor.js"></script>
   </body>
 </html>
