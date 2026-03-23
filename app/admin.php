@@ -18,10 +18,10 @@ require_once __DIR__ . '/mailer/SMTP.php';
 // Cambia estos valores cuando el cliente tenga su propio correo
 define('MAIL_HOST',     'smtp.gmail.com');
 define('MAIL_PORT',     587);
-define('MAIL_USER',     'brahianstivenmolina19@gmail.com'); //cambiar al cooreo del cliente
-define('MAIL_PASS',     'moeg qsel tkex mjmn'); //contraseña de aplicación generada en Gmail
-define('MAIL_FROM',     'brahianstivenmolina19@gmail.com'); //Mismo correo del cliente
-define('MAIL_FROM_NAME','Barber Shop'); //Cambiar por el nombre del negocio del cliente
+define('MAIL_USER',     'brahianstivenmolina19@gmail.com');
+define('MAIL_PASS',     'moeg qsel tkex mjmn');
+define('MAIL_FROM',     'brahianstivenmolina19@gmail.com');
+define('MAIL_FROM_NAME','Barber Shop');
 
 // ── Autenticación básica ─────────────────────
 define('ADMIN_USUARIO',  'admin');
@@ -160,7 +160,7 @@ function enviarCorreoConfirmacion(
                 </tr>
                 <tr>
                     <td style='padding: 10px; background:#f8f9fa; border: 1px solid #dee2e6;'><strong>Dirección</strong></td>
-                    <td style='padding: 10px; border: 1px solid #dee2e6;'>Calle 00 # 00-00, La Ceja, Antioquia</td>
+                    <td style='padding: 10px; border: 1px solid #dee2e6;'>Calle 10 # 43-25, El Poblado, Medellín</td>
                 </tr>
             </table>
             <p>Si necesitas cancelar o cambiar tu cita, contáctanos por WhatsApp:
@@ -168,11 +168,11 @@ function enviarCorreoConfirmacion(
             </p>
             <hr style='border:none; border-top:1px solid #dee2e6; margin: 24px 0;'>
             <p style='color:#6c757d; font-size: 13px;'>
-                Barber Shop · La Ceja, Antioquia · Lunes a Sábado, 9:00 am – 7:00 pm
+                Barber Shop · El Poblado, Medellín · Lunes a Sábado, 9:00 am – 7:00 pm
             </p>
         </div>";
 
-        $mail->AltBody = "¡Cita confirmada, {$nombre}! Te esperamos el {$fecha} a las {$hora12} en Barber Shop, Calle 00 # 00-00, La Ceja, Antioquia.";
+        $mail->AltBody = "¡Cita confirmada, {$nombre}! Te esperamos el {$fecha} a las {$hora12} en Barber Shop, Calle 10 # 43-25, El Poblado, Medellín.";
 
         $mail->send();
         return true;
@@ -234,7 +234,7 @@ function enviarCorreoCancelacion(
             </p>
             <hr style='border:none; border-top:1px solid #dee2e6; margin: 24px 0;'>
             <p style='color:#6c757d; font-size: 13px;'>
-                Barber Shop · La Ceja, Antioquia · Lunes a Sábado, 9:00 am – 7:00 pm
+                Barber Shop · El Poblado, Medellín · Lunes a Sábado, 9:00 am – 7:00 pm
             </p>
         </div>";
 
@@ -275,67 +275,125 @@ if ($logueado) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin — Barber Shop</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/admin.css" />
 </head>
-<body class="bg-light">
+<body>
 
 <?php if (!$logueado): ?>
 
-  <div class="container mt-5" style="max-width: 400px;">
-    <h2 class="mb-4">Panel de Administración</h2>
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="brand">Barber<span>Shop</span></div>
+      <div class="subtitle">Panel de Administración</div>
+      <span class="gold-divider"></span>
 
-    <?php if ($error_login): ?>
-      <div class="alert alert-danger"><?= htmlspecialchars($error_login) ?></div>
-    <?php endif; ?>
+      <?php if ($error_login): ?>
+        <div class="alert-login"><?= htmlspecialchars($error_login) ?></div>
+      <?php endif; ?>
 
-    <form method="POST">
-      <div class="mb-3">
-        <label for="usuario" class="form-label">Usuario</label>
-        <input type="text" class="form-control" id="usuario" name="usuario" required />
-      </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">Contraseña</label>
-        <input type="password" class="form-control" id="password" name="password" required />
-      </div>
-      <button type="submit" class="btn btn-dark w-100">Ingresar</button>
-    </form>
+      <form method="POST">
+        <div class="field-group">
+          <label for="usuario">Usuario</label>
+          <input type="text" id="usuario" name="usuario" placeholder="admin" required autocomplete="username" />
+        </div>
+        <div class="field-group">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password" />
+        </div>
+        <button type="submit" class="btn-gold"><span>Ingresar</span></button>
+      </form>
+    </div>
   </div>
 
 <?php else: ?>
 
-  <div class="container mt-4">
+  <!-- Header -->
+  <header class="admin-header">
+    <div class="brand">Barber<span>Shop</span> <span style="font-size:0.8rem;color:var(--text-faint);font-family:var(--font-body);letter-spacing:0.06em;font-style:normal;">/ Admin</span></div>
+    <form method="POST">
+      <button name="cerrar_sesion" class="btn-logout">Cerrar sesión</button>
+    </form>
+  </header>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2>Citas del día</h2>
-      <form method="POST">
-        <button name="cerrar_sesion" class="btn btn-outline-secondary btn-sm">Cerrar sesión</button>
-      </form>
-    </div>
+  <div class="admin-body">
+
+    <h1 class="section-title">Citas del día</h1>
 
     <?php if ($mensaje): ?>
-      <div class="alert alert-<?= $mensaje_tipo ?>"><?= htmlspecialchars($mensaje) ?></div>
+      <div class="msg-<?= $mensaje_tipo === 'warning' ? 'warning' : 'success' ?>">
+        <?= htmlspecialchars($mensaje) ?>
+      </div>
     <?php endif; ?>
 
-    <form method="GET" class="mb-4 d-flex gap-2 align-items-center">
-      <label for="fecha" class="form-label mb-0">Ver citas del día:</label>
-      <input
-        type="date"
-        id="fecha"
-        name="fecha"
-        class="form-control"
-        style="width: auto;"
-        value="<?= htmlspecialchars($filtro_fecha) ?>"
-      />
-      <button type="submit" class="btn btn-dark btn-sm">Buscar</button>
+    <!-- Filtro de fecha -->
+    <form method="GET" class="fecha-form">
+      <label for="fecha">Ver citas del día</label>
+      <input type="date" id="fecha" name="fecha" value="<?= htmlspecialchars($filtro_fecha) ?>" />
+      <button type="submit" class="btn-buscar">Buscar</button>
     </form>
 
     <?php if (empty($citas)): ?>
-      <p class="text-muted">No hay citas registradas para esta fecha.</p>
+      <div class="empty-state">No hay citas registradas para esta fecha.</div>
+
     <?php else: ?>
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover bg-white">
-          <thead class="table-dark">
+
+      <!-- ── CARDS (móvil) ── -->
+      <div class="citas-list">
+        <?php foreach ($citas as $cita): ?>
+          <?php
+            $estadoClass = match($cita['estado']) {
+              'confirmada' => 'estado-confirmada',
+              'cancelada'  => 'estado-cancelada',
+              default      => 'estado-pendiente',
+            };
+            // Convertir hora a 12h
+            [$hh, $mm] = explode(':', $cita['hora']);
+            $hh = (int)$hh;
+            $per = $hh >= 12 ? 'PM' : 'AM';
+            if ($hh === 0) $hh = 12; elseif ($hh > 12) $hh -= 12;
+            $hora12 = sprintf('%02d:%s %s', $hh, $mm, $per);
+          ?>
+          <div class="cita-card">
+            <div class="cita-card-header">
+              <div class="cita-hora"><?= $hora12 ?></div>
+              <span class="cita-estado <?= $estadoClass ?>"><?= $cita['estado'] ?></span>
+            </div>
+            <div class="cita-info">
+              <div class="cita-row"><strong>Nombre</strong><span><?= htmlspecialchars($cita['nombre']) ?></span></div>
+              <div class="cita-row"><strong>Contacto</strong><span><?= htmlspecialchars($cita['contacto']) ?></span></div>
+              <div class="cita-row"><strong>Correo</strong><span><?= htmlspecialchars($cita['email'] ?? '—') ?></span></div>
+              <?php if (!empty($cita['descripcion'])): ?>
+              <div class="cita-row"><strong>Nota</strong><span><?= htmlspecialchars($cita['descripcion']) ?></span></div>
+              <?php endif; ?>
+            </div>
+            <div class="cita-actions">
+              <?php if ($cita['estado'] === 'pendiente'): ?>
+                <form method="POST" style="flex:1">
+                  <input type="hidden" name="accion" value="confirmar" />
+                  <input type="hidden" name="id" value="<?= $cita['id'] ?>" />
+                  <input type="hidden" name="fecha_filtro" value="<?= $filtro_fecha ?>" />
+                  <button type="submit" class="btn-confirmar" style="width:100%">Confirmar</button>
+                </form>
+              <?php endif; ?>
+              <?php if ($cita['estado'] !== 'cancelada'): ?>
+                <form method="POST" style="flex:1">
+                  <input type="hidden" name="accion" value="cancelar" />
+                  <input type="hidden" name="id" value="<?= $cita['id'] ?>" />
+                  <input type="hidden" name="fecha_filtro" value="<?= $filtro_fecha ?>" />
+                  <button type="submit" class="btn-cancelar" style="width:100%" onclick="return confirm('¿Cancelar esta cita?')">Cancelar</button>
+                </form>
+              <?php endif; ?>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      </div>
+
+      <!-- ── TABLA (desktop) ── -->
+      <div class="citas-table-wrap">
+        <table>
+          <thead>
             <tr>
-              <th>#</th>
               <th>Hora</th>
               <th>Nombre</th>
               <th>Contacto</th>
@@ -347,62 +405,58 @@ if ($logueado) {
           </thead>
           <tbody>
             <?php foreach ($citas as $cita): ?>
-            <tr>
-              <td><?= $cita['id'] ?></td>
-              <td><?= htmlspecialchars($cita['hora']) ?></td>
-              <td><?= htmlspecialchars($cita['nombre']) ?></td>
-              <td><?= htmlspecialchars($cita['contacto']) ?></td>
-              <td><?= htmlspecialchars($cita['email'] ?? '—') ?></td>
-              <td><?= htmlspecialchars($cita['descripcion'] ?? '—') ?></td>
-              <td>
-                <?php
-                  $badge = match($cita['estado']) {
-                    'confirmada' => 'success',
-                    'cancelada'  => 'danger',
-                    default      => 'warning',
-                  };
-                ?>
-                <span class="badge bg-<?= $badge ?>"><?= $cita['estado'] ?></span>
-              </td>
-              <td>
-                <?php if ($cita['estado'] === 'pendiente'): ?>
-                  <form method="POST" class="d-inline">
-                    <input type="hidden" name="accion" value="confirmar" />
-                    <input type="hidden" name="id" value="<?= $cita['id'] ?>" />
-                    <input type="hidden" name="fecha_filtro" value="<?= $filtro_fecha ?>" />
-                    <button type="submit" class="btn btn-success btn-sm">Confirmar</button>
-                  </form>
-                <?php endif; ?>
-
-                <?php if ($cita['estado'] !== 'cancelada'): ?>
-                  <form method="POST" class="d-inline">
-                    <input type="hidden" name="accion" value="cancelar" />
-                    <input type="hidden" name="id" value="<?= $cita['id'] ?>" />
-                    <input type="hidden" name="fecha_filtro" value="<?= $filtro_fecha ?>" />
-                    <button
-                      type="submit"
-                      class="btn btn-danger btn-sm"
-                      onclick="return confirm('¿Cancelar esta cita?')"
-                    >Cancelar</button>
-                  </form>
-                <?php endif; ?>
-              </td>
-            </tr>
+              <?php
+                $estadoClass = match($cita['estado']) {
+                  'confirmada' => 'estado-confirmada',
+                  'cancelada'  => 'estado-cancelada',
+                  default      => 'estado-pendiente',
+                };
+                [$hh, $mm] = explode(':', $cita['hora']);
+                $hh = (int)$hh;
+                $per = $hh >= 12 ? 'PM' : 'AM';
+                if ($hh === 0) $hh = 12; elseif ($hh > 12) $hh -= 12;
+                $hora12 = sprintf('%02d:%s %s', $hh, $mm, $per);
+              ?>
+              <tr>
+                <td class="hora-cell"><?= $hora12 ?></td>
+                <td><?= htmlspecialchars($cita['nombre']) ?></td>
+                <td class="muted"><?= htmlspecialchars($cita['contacto']) ?></td>
+                <td class="muted"><?= htmlspecialchars($cita['email'] ?? '—') ?></td>
+                <td class="muted"><?= htmlspecialchars($cita['descripcion'] ?? '—') ?></td>
+                <td><span class="cita-estado <?= $estadoClass ?>"><?= $cita['estado'] ?></span></td>
+                <td>
+                  <div class="table-actions">
+                    <?php if ($cita['estado'] === 'pendiente'): ?>
+                      <form method="POST">
+                        <input type="hidden" name="accion" value="confirmar" />
+                        <input type="hidden" name="id" value="<?= $cita['id'] ?>" />
+                        <input type="hidden" name="fecha_filtro" value="<?= $filtro_fecha ?>" />
+                        <button type="submit" class="btn-confirmar">Confirmar</button>
+                      </form>
+                    <?php endif; ?>
+                    <?php if ($cita['estado'] !== 'cancelada'): ?>
+                      <form method="POST">
+                        <input type="hidden" name="accion" value="cancelar" />
+                        <input type="hidden" name="id" value="<?= $cita['id'] ?>" />
+                        <input type="hidden" name="fecha_filtro" value="<?= $filtro_fecha ?>" />
+                        <button type="submit" class="btn-cancelar" onclick="return confirm('¿Cancelar esta cita?')">Cancelar</button>
+                      </form>
+                    <?php endif; ?>
+                  </div>
+                </td>
+              </tr>
             <?php endforeach; ?>
           </tbody>
         </table>
       </div>
+
     <?php endif; ?>
 
-    <p class="text-muted mt-3" style="font-size: 0.85rem;">
-      La página se actualiza automáticamente cada 30 segundos.
-    </p>
+    <p class="auto-refresh-note">Actualización automática cada 30 segundos</p>
 
   </div>
 
-  <script>
-    setTimeout(() => location.reload(), 30000);
-  </script>
+  <script>setTimeout(() => location.reload(), 30000);</script>
 
 <?php endif; ?>
 

@@ -1,0 +1,446 @@
+ :root {
+      --bg:          #0e0e0e;
+      --bg-card:     #161616;
+      --bg-elevated: #1e1e1e;
+      --gold:        #c9a84c;
+      --gold-light:  #e2c07a;
+      --gold-dim:    rgba(201, 168, 76, 0.15);
+      --cream:       #f5f0e8;
+      --text-main:   #e8e3da;
+      --text-muted:  #8a8278;
+      --text-faint:  #4a4642;
+      --border:      rgba(201, 168, 76, 0.18);
+      --border-dim:  rgba(255, 255, 255, 0.06);
+      --radius:      12px;
+      --radius-sm:   6px;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body:    'DM Sans', sans-serif;
+      --transition:   0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-weight: 300;
+      min-height: 100vh;
+    }
+
+    /* ── LOGIN ── */
+    .login-wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.25rem;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 380px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-dim);
+      border-radius: var(--radius);
+      padding: 2.5rem 2rem;
+    }
+
+    .login-card .brand {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      color: var(--cream);
+      text-align: center;
+      margin-bottom: 0.25rem;
+    }
+    .login-card .brand span { color: var(--gold); font-style: italic; }
+
+    .login-card .subtitle {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .gold-divider {
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: var(--gold);
+      margin: 0 auto 2rem;
+      opacity: 0.6;
+    }
+
+    .field-group { margin-bottom: 1.25rem; }
+
+    .field-group label {
+      display: block;
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .field-group input {
+      width: 100%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-dim);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 300;
+      padding: 0.75rem 1rem;
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .field-group input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px var(--gold-dim);
+    }
+    .field-group input::placeholder { color: var(--text-faint); }
+
+    .btn-gold {
+      width: 100%;
+      padding: 0.85rem;
+      background: transparent;
+      border: 1px solid var(--gold);
+      border-radius: var(--radius-sm);
+      color: var(--gold);
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+    .btn-gold::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--gold);
+      transform: translateX(-100%);
+      transition: transform var(--transition);
+      z-index: 0;
+    }
+    .btn-gold:hover { color: var(--bg); }
+    .btn-gold:hover::before { transform: translateX(0); }
+    .btn-gold span { position: relative; z-index: 1; }
+
+    .alert-login {
+      background: rgba(220, 53, 69, 0.1);
+      border: 1px solid rgba(220, 53, 69, 0.3);
+      color: #f08090;
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* ── PANEL ── */
+    .admin-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-dim);
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .admin-header .brand {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      color: var(--cream);
+    }
+    .admin-header .brand span { color: var(--gold); font-style: italic; }
+
+    .btn-logout {
+      background: transparent;
+      border: 1px solid var(--border-dim);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.4rem 0.85rem;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .btn-logout:hover { border-color: var(--gold); color: var(--gold); }
+
+    .admin-body { padding: 1.5rem 1.25rem; max-width: 900px; margin: 0 auto; }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      color: var(--cream);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Filtro de fecha */
+    .fecha-form {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.75rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-dim);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+    }
+
+    .fecha-form label {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .fecha-form input[type="date"] {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-dim);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      padding: 0.5rem 0.85rem;
+      outline: none;
+      color-scheme: dark;
+      transition: border-color var(--transition);
+    }
+    .fecha-form input[type="date"]:focus { border-color: var(--gold); }
+
+    .btn-buscar {
+      background: transparent;
+      border: 1px solid var(--gold);
+      border-radius: var(--radius-sm);
+      color: var(--gold);
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .btn-buscar:hover { background: var(--gold); color: var(--bg); }
+
+    /* Mensajes */
+    .msg-success {
+      background: rgba(201, 168, 76, 0.1);
+      border: 1px solid rgba(201, 168, 76, 0.3);
+      color: var(--gold-light);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 1rem;
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+      animation: fadeIn 0.3s ease;
+    }
+    .msg-warning {
+      background: rgba(255, 193, 7, 0.1);
+      border: 1px solid rgba(255, 193, 7, 0.3);
+      color: #ffc107;
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 1rem;
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Sin citas */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-faint);
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+    }
+    .empty-state::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--gold);
+      margin: 0 auto 1rem;
+      opacity: 0.4;
+    }
+
+    /* Cards de citas (mobile-first, reemplaza la tabla en móvil) */
+    .citas-list { display: flex; flex-direction: column; gap: 1rem; }
+
+    .cita-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-dim);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      transition: border-color var(--transition);
+    }
+    .cita-card:hover { border-color: var(--border); }
+
+    .cita-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      gap: 0.75rem;
+    }
+
+    .cita-hora {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: var(--gold);
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+
+    .cita-estado {
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.75rem;
+      border-radius: 2px;
+      font-weight: 500;
+    }
+    .estado-pendiente  { background: rgba(255,193,7,0.12); color: #ffc107; border: 1px solid rgba(255,193,7,0.25); }
+    .estado-confirmada { background: rgba(201,168,76,0.12); color: var(--gold-light); border: 1px solid var(--border); }
+    .estado-cancelada  { background: rgba(220,53,69,0.1); color: #f08090; border: 1px solid rgba(220,53,69,0.25); }
+
+    .cita-info { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+
+    .cita-row {
+      display: flex;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      align-items: baseline;
+    }
+    .cita-row strong {
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      min-width: 72px;
+      font-weight: 400;
+    }
+    .cita-row span { color: var(--text-main); }
+
+    .cita-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+    .btn-confirmar, .btn-cancelar {
+      flex: 1;
+      min-width: 100px;
+      padding: 0.6rem 0.5rem;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition);
+      border: 1px solid;
+      text-align: center;
+    }
+
+    .btn-confirmar {
+      background: rgba(201, 168, 76, 0.1);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+    .btn-confirmar:hover { background: var(--gold); color: var(--bg); }
+
+    .btn-cancelar {
+      background: rgba(220, 53, 69, 0.08);
+      border-color: rgba(220, 53, 69, 0.4);
+      color: #f08090;
+    }
+    .btn-cancelar:hover { background: rgba(220, 53, 69, 0.2); border-color: #f08090; }
+
+    .auto-refresh-note {
+      text-align: center;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--text-faint);
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-dim);
+    }
+
+    /* Tabla para desktop */
+    @media (min-width: 768px) {
+      .admin-body { padding: 2rem; }
+      .citas-list { display: none; }
+      .citas-table-wrap { display: block; }
+    }
+    @media (max-width: 767px) {
+      .citas-table-wrap { display: none; }
+    }
+
+    .citas-table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    thead tr {
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+    }
+    thead th {
+      padding: 0.85rem 1rem;
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 400;
+      text-align: left;
+      white-space: nowrap;
+    }
+    tbody tr {
+      border-bottom: 1px solid var(--border-dim);
+      transition: background var(--transition);
+    }
+    tbody tr:hover { background: var(--bg-card); }
+    tbody td {
+      padding: 0.85rem 1rem;
+      color: var(--text-main);
+      vertical-align: middle;
+    }
+    tbody td.hora-cell {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      color: var(--gold);
+      font-weight: 300;
+    }
+    tbody td.muted { color: var(--text-muted); font-size: 0.82rem; }
+
+    .table-actions { display: flex; gap: 0.4rem; }
+    .table-actions .btn-confirmar,
+    .table-actions .btn-cancelar {
+      flex: none;
+      min-width: auto;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.68rem;
+    }
