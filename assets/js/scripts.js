@@ -13,6 +13,7 @@ const mensajeHora      = document.getElementById('hora-mensaje');
 const inputHora        = document.getElementById('cita-hora');
 const inputNombre      = document.getElementById('cita-nombre');
 const inputContacto    = document.getElementById('cita-contacto');
+const inputEmail       = document.getElementById('cita-email');
 const inputDescripcion = document.getElementById('cita-descripcion');
 const btnAgendar       = document.getElementById('btn-agendar');
 const estadoDiv        = document.getElementById('cita-estado');
@@ -68,14 +69,11 @@ function renderizarHoras(disponibles, ocupadas) {
   listaHoras.innerHTML = '';
 
   // Horas disponibles — seleccionables
-  // La API devuelve horas en 24h (ej: "09:00")
-  // dataset.hora guarda 24h para enviar a la API
-  // textContent muestra 12h para el usuario
   disponibles.forEach(hora24 => {
     const btn = document.createElement('button');
     btn.type         = 'button';
-    btn.textContent  = convertir12h(hora24);  // muestra "09:00 AM"
-    btn.dataset.hora = hora24;                // guarda "09:00" para la API
+    btn.textContent  = convertir12h(hora24);
+    btn.dataset.hora = hora24;
     btn.classList.add('btn-hora', 'disponible');
 
     btn.addEventListener('click', () => seleccionarHora(btn));
@@ -86,7 +84,7 @@ function renderizarHoras(disponibles, ocupadas) {
   ocupadas.forEach(hora24 => {
     const btn = document.createElement('button');
     btn.type        = 'button';
-    btn.textContent = convertir12h(hora24);   // muestra "09:00 AM" también
+    btn.textContent = convertir12h(hora24);
     btn.disabled    = true;
     btn.classList.add('btn-hora', 'ocupada');
     listaHoras.appendChild(btn);
@@ -95,13 +93,12 @@ function renderizarHoras(disponibles, ocupadas) {
 
 // ── Seleccionar una hora ─────────────────────
 function seleccionarHora(btnSeleccionado) {
-  // Quitar selección anterior
   document.querySelectorAll('.btn-hora.seleccionada').forEach(btn => {
     btn.classList.remove('seleccionada');
   });
 
   btnSeleccionado.classList.add('seleccionada');
-  inputHora.value     = btnSeleccionado.dataset.hora;  // envía en 24h a la API
+  inputHora.value     = btnSeleccionado.dataset.hora;
   btnAgendar.disabled = false;
   limpiarMensaje();
 }
@@ -112,8 +109,9 @@ btnAgendar?.addEventListener('click', async () => {
 
   const nombre      = inputNombre.value.trim();
   const contacto    = inputContacto.value.trim();
+  const email       = inputEmail.value.trim();
   const fecha       = inputFecha.value;
-  const hora        = inputHora.value;           // siempre en 24h
+  const hora        = inputHora.value;
   const descripcion = inputDescripcion.value.trim();
 
   // Validación del lado del cliente
@@ -125,6 +123,18 @@ btnAgendar?.addEventListener('click', async () => {
   if (!contacto) {
     mostrarMensaje('Por favor ingresa tu número de contacto.', 'error');
     inputContacto.focus();
+    return;
+  }
+  if (!email) {
+    mostrarMensaje('Por favor ingresa tu correo electrónico.', 'error');
+    inputEmail.focus();
+    return;
+  }
+  // Validar formato de email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    mostrarMensaje('Por favor ingresa un correo electrónico válido.', 'error');
+    inputEmail.focus();
     return;
   }
   if (!fecha || !hora) {
@@ -139,18 +149,17 @@ btnAgendar?.addEventListener('click', async () => {
     const res = await fetch(API_URL, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ nombre, contacto, fecha, hora, descripcion }),
+      body:    JSON.stringify({ nombre, contacto, email, fecha, hora, descripcion }),
     });
 
     const data = await res.json();
 
     if (res.ok) {
       mostrarMensaje(
-        `¡Cita agendada! Te esperamos el ${formatearFecha(fecha)} a las ${convertir12h(hora)}.`,
+        `¡Cita agendada! Te esperamos el ${formatearFecha(fecha)} a las ${convertir12h(hora)}. Recibirás una confirmación en ${email} cuando la cita sea aprobada.`,
         'exito'
       );
       limpiarFormulario();
-      // Refrescar disponibilidad para que la hora quede marcada como ocupada
       consultarDisponibilidad(fecha);
     } else {
       mostrarMensaje(data.error || 'No se pudo agendar la cita.', 'error');
@@ -181,6 +190,7 @@ function limpiarMensaje() {
 function limpiarFormulario() {
   inputNombre.value      = '';
   inputContacto.value    = '';
+  inputEmail.value       = '';
   inputDescripcion.value = '';
   inputHora.value        = '';
   btnAgendar.disabled    = true;

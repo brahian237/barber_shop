@@ -3,23 +3,17 @@
 // API DE CITAS
 // Endpoints:
 //   GET  citas.php?accion=disponibilidad&fecha=YYYY-MM-DD
-//         devuelve horas ocupadas en esa fecha
-//
 //   GET  citas.php?accion=citas_del_dia&fecha=YYYY-MM-DD
-//         devuelve todas las citas de esa fecha (sin datos privados)
-//
 //   POST citas.php  (body JSON)
-//         crea una nueva cita
 // ============================================
 
 require_once 'conexion.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
-// Horario del negocio: cada 30 minutos de 9am a 7pm
 define('HORA_INICIO', '09:00');
 define('HORA_FIN',    '19:00');
-define('INTERVALO',   30);       // minutos
+define('INTERVALO',   30);
 
 // ── Helpers ─────────────────────────────────
 
@@ -75,7 +69,7 @@ if ($metodo === 'GET' && $accion === 'disponibilidad') {
     ]);
 }
 
-// ── GET: citas del día (vista pública, sin datos privados) ──
+// ── GET: citas del día ───────────────────────
 if ($metodo === 'GET' && $accion === 'citas_del_dia') {
 
     $fecha = $_GET['fecha'] ?? '';
@@ -105,7 +99,7 @@ if ($metodo === 'POST') {
     $body = json_decode(file_get_contents('php://input'), true);
 
     // Validar campos requeridos
-    $requeridos = ['nombre', 'contacto', 'fecha', 'hora'];
+    $requeridos = ['nombre', 'contacto', 'email', 'fecha', 'hora'];
     foreach ($requeridos as $campo) {
         if (empty($body[$campo])) {
             responder(['error' => "El campo '$campo' es obligatorio."], 400);
@@ -114,9 +108,15 @@ if ($metodo === 'POST') {
 
     $nombre      = trim($body['nombre']);
     $contacto    = trim($body['contacto']);
+    $email       = trim($body['email']);
     $fecha       = trim($body['fecha']);
     $hora        = trim($body['hora']);
     $descripcion = trim($body['descripcion'] ?? '');
+
+    // Validar formato email
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        responder(['error' => 'El correo electrónico no es válido.'], 400);
+    }
 
     // Validar formato fecha y hora
     if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
@@ -139,10 +139,10 @@ if ($metodo === 'POST') {
     try {
         $pdo  = conectar();
         $stmt = $pdo->prepare(
-            "INSERT INTO citas (nombre, contacto, fecha, hora, descripcion)
-             VALUES (?, ?, ?, ?, ?)"
+            "INSERT INTO citas (nombre, contacto, email, fecha, hora, descripcion)
+             VALUES (?, ?, ?, ?, ?, ?)"
         );
-        $stmt->execute([$nombre, $contacto, $fecha, $hora, $descripcion]);
+        $stmt->execute([$nombre, $contacto, $email, $fecha, $hora, $descripcion]);
 
         responder([
             'mensaje' => 'Cita agendada correctamente.',
@@ -156,7 +156,6 @@ if ($metodo === 'POST') {
         ], 201);
 
     } catch (PDOException $e) {
-        // Error de clave única: la hora ya está ocupada
         if ($e->getCode() === '23000') {
             responder(['error' => 'Esa fecha y hora ya están ocupadas.'], 409);
         }
